@@ -28,6 +28,9 @@ class Card extends HiveObject {
   @HiveField(7)
   final String paymentFinalDate;
 
+  @HiveField(8)
+  String? backgroundImagePath;
+
   Card({
     required this.bankName,
     required this.accountNumber,
@@ -37,5 +40,6 @@ class Card extends HiveObject {
     required this.expiryDate,
     required this.generationDate,
     required this.paymentFinalDate,
+    this.backgroundImagePath,
   });
 }

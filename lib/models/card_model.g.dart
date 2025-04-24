@@ -25,13 +25,14 @@ class CardAdapter extends TypeAdapter<Card> {
       expiryDate: fields[5] as String,
       generationDate: fields[6] as String,
       paymentFinalDate: fields[7] as String,
+      backgroundImagePath: fields[8] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Card obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.bankName)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class CardAdapter extends TypeAdapter<Card> {
       ..writeByte(6)
       ..write(obj.generationDate)
       ..writeByte(7)
-      ..write(obj.paymentFinalDate);
+      ..write(obj.paymentFinalDate)
+      ..writeByte(8)
+      ..write(obj.backgroundImagePath);
   }
 
   @override

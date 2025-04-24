@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide Card;
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../models/card_model.dart';
 import '../../provider/app_data_provider.dart';
@@ -9,6 +10,7 @@ import 'bank_dropdown.dart';
 import 'custom_text_form_field.dart';
 import 'date_picker_field.dart';
 import 'card_validator.dart';
+import 'card_preview.dart';
 
 class CardMasterPage extends StatefulWidget {
   final Card? card;
@@ -31,6 +33,8 @@ class _CardMasterPageState extends State<CardMasterPage> {
   final _paymentFinalDateController = TextEditingController();
   String? _selectedBank;
   final _validator = CardValidator();
+  String? _backgroundImagePath; // To hold the selected image path
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -44,12 +48,23 @@ class _CardMasterPageState extends State<CardMasterPage> {
       _expiryDateController.text = widget.card!.expiryDate;
       _generationDateController.text = widget.card!.generationDate;
       _paymentFinalDateController.text = widget.card!.paymentFinalDate;
+      _backgroundImagePath =
+          widget.card!.backgroundImagePath; // Load existing image
     } else {
       final today = DateTime.now();
       _generationDateController.text = _validator.formatDate(today);
       _expiryDateController.text = _validator.formatDate(today);
       _paymentFinalDateController.text =
           _validator.formatDate(today.add(const Duration(days: 30)));
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _backgroundImagePath = image.path; // Update image path
+      });
     }
   }
 
@@ -64,6 +79,7 @@ class _CardMasterPageState extends State<CardMasterPage> {
         expiryDate: _expiryDateController.text,
         generationDate: _generationDateController.text,
         paymentFinalDate: _paymentFinalDateController.text,
+        backgroundImagePath: _backgroundImagePath, // Save image path
       );
       final box = Hive.box<Card>('cards');
       if (widget.index != null) {
@@ -114,6 +130,27 @@ class _CardMasterPageState extends State<CardMasterPage> {
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
+          ValueListenableBuilder(
+            valueListenable: _cardNumberController,
+            builder: (context, _, __) => ValueListenableBuilder(
+              valueListenable: _accountHolderNameController,
+              builder: (context, _, __) => ValueListenableBuilder(
+                valueListenable: _expiryDateController,
+                builder: (context, _, __) => ValueListenableBuilder(
+                  valueListenable: _cvvController,
+                  builder: (context, _, __) => CardPreview(
+                    bankName: _selectedBank,
+                    cardNumber: _cardNumberController.text,
+                    cardHolderName: _accountHolderNameController.text,
+                    expiryDate: _expiryDateController.text,
+                    cvv: _cvvController.text,
+                    backgroundImagePath:
+                        _backgroundImagePath, // Pass image path
+                  ),
+                ),
+              ),
+            ),
+          ),
           Text(
             widget.card != null ? 'Edit Card Details' : 'Card Details',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -190,6 +227,26 @@ class _CardMasterPageState extends State<CardMasterPage> {
             initialDate: widget.card?.paymentFinalDate,
             validator: (value) => _validator.validatePaymentFinalDate(
                 value, _generationDateController.text),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _pickImage,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor:
+                  isDarkMode ? Colors.blueGrey[900] : kPrimaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+            child: Text(
+              'Pick Background Image',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: isDarkMode ? Colors.blueGrey[900] : kPrimaryColor,
+              ),
+            ),
           ),
           const SizedBox(height: 24),
           Align(
