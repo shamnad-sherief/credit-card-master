@@ -1,16 +1,9 @@
 # credit_card_master
 
-A new Flutter project.
+Credit Card Master is a Flutter app designed to manage credit card details with a user-friendly interface. It allows users to add, edit, and view card information with a live preview, including custom background images for cards.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+https://github.com/user-attachments/assets/ac4d6c6e-21fa-4efd-a6c9-9f66bddbb258
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
