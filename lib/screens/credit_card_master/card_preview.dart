@@ -2,16 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'dart:ui'; // For BackdropFilter
-
+import 'dart:ui'; 
 class CardPreview extends StatelessWidget {
   final String? bankName;
   final String cardNumber;
   final String cardHolderName;
   final String expiryDate;
   final String cvv;
-  final String? backgroundImagePath; // New parameter for image path
-
+  final String? backgroundImagePath; 
   const CardPreview({
     super.key,
     this.bankName,
@@ -24,12 +22,26 @@ class CardPreview extends StatelessWidget {
 
   String _maskCardNumber(String cardNumber) {
     cardNumber = cardNumber.replaceAll(RegExp(r'\D'), '');
-    if (cardNumber.length < 4) return cardNumber.padRight(16, 'X');
-    return '**** **** **** ${cardNumber.substring(cardNumber.length - 4)}';
+    int length = cardNumber.length;
+
+    String firstFour = '****';
+    String lastFour = '****';
+
+    if (length > 0) {
+      firstFour = cardNumber.substring(0, length.clamp(0, 4)).padRight(4, '*');
+    }
+
+    if (length >= 10) {
+      int lastStart =
+          length - 4 > 12 ? length - 4 : 12; // Start at position 13 if possible
+      lastFour =
+          cardNumber.substring(lastStart.clamp(0, length)).padRight(4, '*');
+    }
+    return '$firstFour **** **** $lastFour';
   }
 
   String _formatExpiryDate(String expiry) {
-    if (expiry.isEmpty ||
+    if (expiry.isEmpty || 
         !RegExp(r'^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{4}$')
             .hasMatch(expiry)) {
       return 'XX/XX';
